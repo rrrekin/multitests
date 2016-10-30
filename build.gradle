@@ -16,6 +16,7 @@
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
+apply plugin: 'checkstyle'
 
 repositories {
     mavenCentral()
@@ -29,7 +30,7 @@ targetCompatibility = 1.6
 
 ext {
     // Dependencies versions
-    junitVersion  = '4.11'
+    junitVersion = '4.11'
     mockitoVersion = '2.2.9'
 }
 
@@ -49,13 +50,13 @@ jar {
     }
 }
 
-task javadocJar (type: Jar, dependsOn: javadoc) {
+task javadocJar(type: Jar, dependsOn: javadoc) {
     group = 'documentation'
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
 
-task sourceJar (type : Jar) {
+task sourceJar(type: Jar) {
     group = 'documentation'
     classifier = 'sources'
     from sourceSets.main.allSource
@@ -63,4 +64,10 @@ task sourceJar (type : Jar) {
 
 wrapper {
     gradleVersion = '2.14'
+}
+
+checkstyle {
+    // last JDK6 compatible
+    toolVersion '6.1.1'
+    sourceSets = [sourceSets.main]
 }

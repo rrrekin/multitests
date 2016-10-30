@@ -31,6 +31,9 @@ import static java.lang.annotation.ElementType.METHOD;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({METHOD})
 public @interface Repeat {
-    /** Number test repetitions. */
-    int value() default 10;
+
+    int DEFAULT_REPETITION_COUNT = 10;
+
+    /** Number of test repetitions. */
+    int value() default DEFAULT_REPETITION_COUNT;
 }

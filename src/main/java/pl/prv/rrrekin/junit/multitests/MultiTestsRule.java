@@ -19,8 +19,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -44,6 +44,30 @@ import java.util.concurrent.TimeoutException;
  */
 public class MultiTestsRule implements TestRule {
 
+    @Override
+    public Statement apply(final Statement statement, final Description description) {
+        Statement result = statement;
+        final Retry retry = description.getAnnotation(Retry.class);
+        if (retry != null) {
+            final int times = retry.value();
+            result = new RetryStatement(times, result);
+        }
+        final Repeat repeat = description.getAnnotation(Repeat.class);
+        if (repeat != null) {
+            final int times = repeat.value();
+            result = new RepeatStatement(times, result);
+        }
+        final Parallel parallel = description.getAnnotation(Parallel.class);
+        if (parallel != null) {
+            final int times = parallel.value();
+            final long timeout = parallel.timeout();
+            result = new ParallelStatement(times, timeout, result);
+        }
+
+        return result;
+    }
+
+    /** Wrapping statement that executes inner statement until success or retry limit reached. */
     static class RetryStatement extends Statement {
         private final int times;
         private final Statement statement;
@@ -70,6 +94,7 @@ public class MultiTestsRule implements TestRule {
         }
     }
 
+    /** Wrapping statement that executes inner statement several times. */
     static class RepeatStatement extends Statement {
         private final int times;
         private final Statement statement;
@@ -87,6 +112,7 @@ public class MultiTestsRule implements TestRule {
         }
     }
 
+    /** Wrapping statement that executes inner statement several times in parallel. */
     static class ParallelStatement extends Statement {
         private final int times;
         private final long timeout;
@@ -129,28 +155,5 @@ public class MultiTestsRule implements TestRule {
                 }
             }
         }
-    }
-
-    @Override
-    public Statement apply(final Statement statement, final Description description) {
-        Statement result = statement;
-        final Retry retry = description.getAnnotation(Retry.class);
-        if (retry != null) {
-            final int times = retry.value();
-            result = new RetryStatement(times, result);
-        }
-        final Repeat repeat = description.getAnnotation(Repeat.class);
-        if (repeat != null) {
-            final int times = repeat.value();
-            result = new RepeatStatement(times, result);
-        }
-        final Parallel parallel = description.getAnnotation(Parallel.class);
-        if (parallel != null) {
-            final int times = parallel.value();
-            final long timeout = parallel.timeout();
-            result = new ParallelStatement(times, timeout, result);
-        }
-
-        return result;
     }
 }

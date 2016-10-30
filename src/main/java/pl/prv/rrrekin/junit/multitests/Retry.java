@@ -32,6 +32,9 @@ import static java.lang.annotation.ElementType.METHOD;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({METHOD})
 public @interface Retry {
+
+    int DEFAULT_TEST_RETRY_COUNT = 3;
+
     /** Number of maximum test repetitions. */
-    int value() default 3;
+    int value() default DEFAULT_TEST_RETRY_COUNT;
 }

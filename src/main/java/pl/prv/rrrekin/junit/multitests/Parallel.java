@@ -31,9 +31,13 @@ import static java.lang.annotation.ElementType.METHOD;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({METHOD})
 public @interface Parallel {
-    /** Number of parallel test executions. */
-    int value() default 10;
 
-    /** Timeout in milliseconds. Default 10 000. */
-    long timeout() default 10000;
+    int DEFAULT_THREAD_COUNT = 10;
+    int DEFAULT_TIMEOUT_MS = 10000;
+
+    /** Number of parallel execution threads. */
+    int value() default DEFAULT_THREAD_COUNT;
+
+    /** Thread execution timeout in milliseconds. */
+    long timeout() default DEFAULT_TIMEOUT_MS;
 }
