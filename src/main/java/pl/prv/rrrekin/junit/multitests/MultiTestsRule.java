@@ -30,15 +30,25 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * JUnit 4 test rule that enables multiple test executions. Using provided annotations: @{@link Retry}, @{@link Repeat}
+ * and @{@link Parallel}, tests can be executed respectively:
+ *
+ * <ul>
+ * <li> until success or maximum execution number executions reached with @{@link Retry} annotation </li>
+ * <li> specified number of times sequentially with @{@link Repeat} annotation </li>
+ * <li> specified number of times in parallel using @{@link Parallel} annotation - test threads are started
+ * synchronously using cyclic barrier</li>
+ * </ul>
+ *
  * @author Michal Rudewicz <michal.rudewicz@gmail.com>
  */
 public class MultiTestsRule implements TestRule {
 
-    private static class RetryStatement extends Statement {
+    static class RetryStatement extends Statement {
         private final int times;
         private final Statement statement;
 
-        private RetryStatement(final int times, final Statement statement) {
+        RetryStatement(final int times, final Statement statement) {
             this.times = times;
             this.statement = statement;
         }
@@ -50,9 +60,7 @@ public class MultiTestsRule implements TestRule {
                 try {
                     statement.evaluate();
                     return;
-                } catch (final Exception ex) {
-                    lastError = ex;
-                } catch (final AssertionError ex) {
+                } catch (final Throwable ex) {
                     lastError = ex;
                 }
             }
@@ -62,11 +70,11 @@ public class MultiTestsRule implements TestRule {
         }
     }
 
-    private static class RepeatStatement extends Statement {
+    static class RepeatStatement extends Statement {
         private final int times;
         private final Statement statement;
 
-        private RepeatStatement(final int times, final Statement statement) {
+        RepeatStatement(final int times, final Statement statement) {
             this.times = times;
             this.statement = statement;
         }
@@ -79,14 +87,14 @@ public class MultiTestsRule implements TestRule {
         }
     }
 
-    private static class ParallelStatement extends Statement {
+    static class ParallelStatement extends Statement {
         private final int times;
         private final long timeout;
         private final Statement statement;
         private final CyclicBarrier startBarrier;
         private final ExecutorService executor;
 
-        private ParallelStatement(final int times, final long timeout, final Statement statement) {
+        ParallelStatement(final int times, final long timeout, final Statement statement) {
             this.times = times;
             this.timeout = timeout;
             this.statement = statement;

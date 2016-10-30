@@ -30,16 +30,24 @@ targetCompatibility = 1.6
 ext {
     // Dependencies versions
     junitVersion  = '4.11'
+    mockitoVersion = '2.2.9'
 }
 
 dependencies {
     compile "junit:junit:$junitVersion"
+
     testCompile "junit:junit:$junitVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
 
-//task javadoc(type: Javadoc) {
-//    source = sourceSets.main.allJava
-//}
+jar {
+    manifest {
+        attributes(
+                "Version": "${project.version}",
+                "Build-Date": new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))
+        )
+    }
+}
 
 task javadocJar (type: Jar, dependsOn: javadoc) {
     group = 'documentation'

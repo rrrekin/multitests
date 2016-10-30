@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.METHOD;
 
 /**
- * Indicates that test should be executed multiple times (default 3) until it is finally considered as failing.
+ * Indicates that the test should be executed multiple times (default 3) until it is finally considered as failing.
  * Used by the MultiTestsRule.
  *
  * @author Michal Rudewicz <michal.rudewicz@gmail.com>

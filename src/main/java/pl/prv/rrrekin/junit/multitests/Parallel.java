@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.METHOD;
 
 /**
- * Indicates that test should be executed multiple times (default 10) in parallel, all executions have to succeed in
+ * Indicates that the test should be executed multiple times (default 10) in parallel, all executions have to succeed in
  * given timeout, default 10000ms. Used by the MultiTestsRule.
  *
  * @author Michal Rudewicz <michal.rudewicz@gmail.com>
