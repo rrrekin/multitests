@@ -17,13 +17,16 @@
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'checkstyle'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 repositories {
     mavenCentral()
 }
 
-version = '0.5.0'
-group = 'pl.prv.rrrekin'
+version = '0.6.0'
+archivesBaseName = "multitests-junit4"
+group = 'com.github.rrrekin'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -62,10 +65,62 @@ task sourceJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
+artifacts {
+    archives javadocJar, sourceJar
+}
+
+signing {
+    sign configurations.archives
+}
+
 wrapper {
     gradleVersion = '2.14'
 }
 
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'multitests JUnit4 library'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'JUnit 4 rule and annotations to multiple test execution: repeat, retry and run in parallel.'
+                url 'https://github.com/rrrekin/multitests'
+
+                scm {
+                    connection 'scm:git:https://github.com/rrrekin/multitests.git'
+                    developerConnection 'scm:git@github.com:rrrekin/multitests.git'
+                    url 'https://github.com/rrrekin/multitests'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'rrrekin'
+                        name 'Michal Rudewicz'
+                        email 'michal.rudewicz@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}
 checkstyle {
     // last JDK6 compatible
     toolVersion '6.1.1'
