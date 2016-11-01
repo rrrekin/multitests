@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package pl.prv.rrrekin.junit.multitests;
+package com.github.rrrekin.junit.multitests;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

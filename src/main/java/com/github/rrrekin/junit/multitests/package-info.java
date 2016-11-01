@@ -20,4 +20,4 @@
  *
  * @author Michal Rudewicz <michal.rudewicz@ericsson.com>
  */
-package pl.prv.rrrekin.junit.multitests;
+package com.github.rrrekin.junit.multitests;

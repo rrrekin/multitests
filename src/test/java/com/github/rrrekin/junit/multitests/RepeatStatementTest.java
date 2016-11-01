@@ -1,4 +1,4 @@
-package pl.prv.rrrekin.junit.multitests;
+package com.github.rrrekin.junit.multitests;
 
 import org.junit.Before;
 import org.junit.Test;

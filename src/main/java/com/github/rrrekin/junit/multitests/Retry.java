@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package pl.prv.rrrekin.junit.multitests;
+package com.github.rrrekin.junit.multitests;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

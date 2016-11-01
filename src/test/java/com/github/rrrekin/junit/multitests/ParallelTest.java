@@ -46,7 +46,7 @@
  * under the License.
  */
 
-package pl.prv.rrrekin.junit.multitests;
+package com.github.rrrekin.junit.multitests;
 
 import org.junit.Ignore;
 import org.junit.Rule;

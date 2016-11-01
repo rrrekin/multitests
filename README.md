@@ -2,6 +2,41 @@
 JUnit 4 rule and annotations to multiple test execution: repeat, retry and run in parallel: @Repeat, @Retry and @Parallel respectively.
 
 ## Usage
+
+### Declaring dependency
+#### Gradle
+In `dependencies` section of _build.gradle_ file add test dependency on `junit4` and  `com.github.rrrekin:multitests-junit4:0.7.0`:
+
+```gradle
+dependencies {
+    compile ......
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'com.github.rrrekin:multitests-junit4:0.7.0'
+}
+```
+#### Maven
+
+in the `dependency` section of _pom.xml_ file add dependency on `junit4` and `multitests-junit4`:
+
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.rrrekin</groupId>
+            <artifactId>multitests-junit4</artifactId>
+            <version>0.7.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+```
+
+### Using in test class
 Sample usage is included in tests files `RetryTest.java`, `RepeatTest.java` and `Parallel.java`.
 
 To enable annotations following rule has to be added to JUnit4 test class:
@@ -168,3 +203,6 @@ Execute gredle wrapper with build task:
 ```
 
 Complied jar file is located in _build/libs/_ directory.
+
+## ChangeLog
+[ChangeLog](Changelog.md)
