@@ -122,53 +122,53 @@ public class RepeatTest {
 ```
 Tests  1 & 2 above succeed, but will fail if the number of repetition will be increased. Test 3 will fail as the increased number of repetitions will lead to failure.
  
- ### Parallel annotation
- This annotation can be helpful for testing thread-safety. It causes to start multiple threads (default 10), that are synchronized on cyclic barrier to synchronously start test method code execution in all threads. Test execution is stopped and test is failed when timeout is reached. The default timeout value is 10000 milliseconds.
- 
- Examples of usage:
- ```java
- public class ParallelTest {
- 
-     private static final List<String> list1 = new ArrayList<String>();
-     private static final List<String> list2 = new CopyOnWriteArrayList<String>();
-     private static final List<String> list3 = new CopyOnWriteArrayList<String>();
- 
-     @Rule public MultiTestsRule multiTests = new MultiTestsRule();
- 
-     @Ignore("Fails with ConcurrentModificationException")
-     @Test
-     @Parallel(100)
-     public void test1() throws Exception {
-         final StringBuilder concatenation = new StringBuilder();
-         for(final String str: list1){
-             concatenation.append(str);
-         }
-         list1.add("abc");
-     }
- 
-     @Test()
-     @Parallel(100)
-     public void test2() throws Exception {
-         final StringBuilder concatenation = new StringBuilder();
-         for(final String str: list2){
-             concatenation.append(str);
-         }
-         list2.add("abc");
-     }
- 
-     @Ignore("Will fail due to timeout")
-     @Test
-     @Parallel(timeout = 14)
-     public void test3() throws Exception {
-         final StringBuilder concatenation = new StringBuilder();
-         for(final String str: list3){
-             Thread.sleep(15);
-             concatenation.append(str);
-         }
-         list3.add("abc");
-     }
- }
- ```
+### @Parallel annotation
+This annotation can be helpful for testing thread-safety. It causes to start multiple threads (default 10), that are synchronized on cyclic barrier to synchronously start test method code execution in all threads. Test execution is stopped and test is failed when timeout is reached. The default timeout value is 10000 milliseconds.
+
+Examples of usage:
+```java
+public class ParallelTest {
+
+    private static final List<String> list1 = new ArrayList<String>();
+    private static final List<String> list2 = new CopyOnWriteArrayList<String>();
+    private static final List<String> list3 = new CopyOnWriteArrayList<String>();
+
+    @Rule public MultiTestsRule multiTests = new MultiTestsRule();
+
+    @Ignore("Fails with ConcurrentModificationException")
+    @Test
+    @Parallel(100)
+    public void test1() throws Exception {
+        final StringBuilder concatenation = new StringBuilder();
+        for(final String str: list1){
+            concatenation.append(str);
+        }
+        list1.add("abc");
+    }
+
+    @Test()
+    @Parallel(100)
+    public void test2() throws Exception {
+        final StringBuilder concatenation = new StringBuilder();
+        for(final String str: list2){
+            concatenation.append(str);
+        }
+        list2.add("abc");
+    }
+
+    @Ignore("Will fail due to timeout")
+    @Test
+    @Parallel(timeout = 14)
+    public void test3() throws Exception {
+        final StringBuilder concatenation = new StringBuilder();
+        for(final String str: list3){
+            Thread.sleep(15);
+            concatenation.append(str);
+        }
+        list3.add("abc");
+    }
+}
+```
  
 * `test1` fails because `ConcurrentModificationException` is thrown, as ArrayList is not thread-safe
 * `test2` succeeds as it uses thread-safe CopyOnWriteArrayList
