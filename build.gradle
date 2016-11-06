@@ -24,7 +24,7 @@ repositories {
     mavenCentral()
 }
 
-version = '0.7.0'
+version = '0.7.1'
 archivesBaseName = "multitests-junit4"
 group = 'com.github.rrrekin'
 
@@ -33,7 +33,7 @@ targetCompatibility = 1.6
 
 ext {
     // Dependencies versions
-    junitVersion = '4.11'
+    junitVersion = '4.12'
     mockitoVersion = '2.2.9'
 }
 
@@ -89,6 +89,10 @@ uploadArchives {
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                 authentication(userName: user, password: pass)
+            }
+
+            pom.whenConfigured {
+                p -> p.dependencies = []
             }
 
             pom.project {
