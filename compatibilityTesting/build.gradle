@@ -25,22 +25,53 @@ def testedVersion = rootProject.version
 def testedJdk = System.getProperty('java.version')
 def jdkVendor = System.getProperty('java.vm.vendor')
 
-def junitTestedVersion = project.hasProperty('junit')?junit:'4.+'
+def junitTestedVersion = project.hasProperty('junit') ? junit : '4.+'
 
-def destinationDirectory = "reports/$testedVersion/JDK$testedJdk/junit-$junitTestedVersion"
+def reportsDirectory = "reports" as File
 
 dependencies {
     testCompile "junit:junit:$junitTestedVersion"
     testCompile "com.github.rrrekin:multitests-junit4:${testedVersion}"
 }
 
-task('prepareResultDirs') << {
-    (destinationDirectory as File).mkdirs()
-}
-
-task('copyTestResults', type: Copy, dependsOn: 'prepareResultDirs') {
-    from(file("$buildDir/reports/tests"))
-    into(destinationDirectory)
-}
-
 build.dependsOn('copyTestResults')
+
+test {
+    ignoreFailures = true
+    reports {
+        junitXml.enabled = true
+        html.enabled = false
+    }
+}
+
+task buildTestReport {
+    doLast {
+        reportsDirectory.mkdirs()
+        def destFile = new File(reportsDirectory, "test_report_${testedVersion}_JDK${testedJdk}_junit-${junitTestedVersion}.md")
+        destFile.text = "# Compatibility test results for multitests library v. ${testedVersion} using JUnit v. ${junitTestedVersion} and Java ${testedJdk} from ${jdkVendor}\n"
+
+        def files = fileTree("$buildDir/test-results").include('*.xml')
+
+        def compatible = true
+        files.each { srcFile ->
+            def testResults = new XmlSlurper().parse(srcFile)
+            testResults.testcase.each { testcase ->
+                def name = testcase.@name
+                def className = (testcase.@classname as String).replaceFirst(/.*\./, '')
+                def skipped = testcase.skipped.size() != 0
+                def failed = testcase.failure.size() != 0
+                def message = '**OK**'
+                if (failed) {
+                    compatible = false
+                    message = "**FAILED**: ${testcase.failure.@message}"
+                } else if (skipped) {
+                    message = '~~skipped~~'
+                }
+                destFile << "- $className.$name -> $message\n"
+            }
+        }
+        destFile << "\n\nCompatible: ${compatible ? 'YES' : 'NO'}\n"
+    }
+}
+
+buildTestReport.dependsOn(test)
