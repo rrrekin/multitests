@@ -70,24 +70,25 @@ artifacts {
 }
 
 signing {
+    required {
+        signing.hasProperty('keyId') && signing.hasProperty('password') && signing.hasProperty('secretKeyRingFile') && gradle.taskGraph.hasTask("uploadArchives")
+    }
     sign configurations.archives
 }
 
-wrapper {
-    gradleVersion = '2.14'
-}
-
 uploadArchives {
+    def user = project.hasProperty('ossrhUsername')?ossrhUsername:''
+    def pass = project.hasProperty('ossrhPassword')?ossrhPassword:''
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: user, password: pass)
             }
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: user, password: pass)
             }
 
             pom.project {
@@ -121,8 +122,25 @@ uploadArchives {
         }
     }
 }
+
+
 checkstyle {
     // last JDK6 compatible
     toolVersion '6.1.1'
     sourceSets = [sourceSets.main]
 }
+
+jacoco.toolVersion = '0.7.7.201606060606'
+
+jacocoTestReport {
+    group = 'verification'
+    reports {
+        xml.enabled true
+        csv.enabled false
+    }
+}
+
+wrapper {
+    gradleVersion = '2.14'
+}
+
