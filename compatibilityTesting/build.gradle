@@ -48,11 +48,13 @@ task buildTestReport {
     doLast {
         reportsDirectory.mkdirs()
         def destFile = new File(reportsDirectory, "test_report_${testedVersion}_JDK${testedJdk}_junit-${junitTestedVersion}.md")
+        println "Generating report: $destFile"
         destFile.text = "# Compatibility test results for multitests library v. ${testedVersion} using JUnit v. ${junitTestedVersion} and Java ${testedJdk} from ${jdkVendor}\n"
 
         def files = fileTree("$buildDir/test-results").include('*.xml')
 
         def compatible = true
+        def resultsFound = false
         files.each { srcFile ->
             def testResults = new XmlSlurper().parse(srcFile)
             testResults.testcase.each { testcase ->
@@ -68,10 +70,32 @@ task buildTestReport {
                     message = '~~skipped~~'
                 }
                 destFile << "- $className.$name -> $message\n"
+                resultsFound = true
             }
         }
+        if (!resultsFound) {
+            destFile << "\nUnable to execute tests\n"
+            compatible = false
+        }
         destFile << "\n\nCompatible: ${compatible ? 'YES' : 'NO'}\n"
+        
+        // Generate index
+        File[] reports = fileTree(reportsDirectory).include('test_report_*.md').files.sort{ a,b ->
+            a.name.replaceAll(/\d+/){"00000$it".reverse().take(6).reverse()} <=> b.name.replaceAll(/\d+/){"00000$it".reverse().take(6).reverse()} }
+        def indexFile = new File(reportsDirectory, "index.md")
+        indexFile.text = "# Compatibility testing report\n"
+        def lastVersion = '-1'
+        reports.each { report ->
+            def libVersion = (report.name =~ /^test_report_([^_]*)/)[0][1]
+            if(libVersion != lastVersion) {
+                lastVersion = libVersion
+                indexFile << "\n## Multitests ver. $libVersion\n\n"
+            }
+            def result = (report.text =~ /(?ms)^Compatible:\s*(.*)\s*$/)[0][1]
+            def mark = result.toString().toUpperCase().trim()=='YES'?'':'~~'
+            indexFile << "* [$mark${report.name.replaceFirst('\\.md','')}$mark Compatible: $result](${report.name})\n"
+        }
     }
 }
 
-buildTestReport.dependsOn(test)
+buildTestReport.mustRunAfter(test)

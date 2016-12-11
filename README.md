@@ -208,4 +208,4 @@ Complied jar file is located in _build/libs/_ directory.
 [ChangeLog](Changelog.md)
 
 ## Compatibility tests
-Compatibility test reports can be found [here](compatibilityTesting/reports).
+Compatibility test reports can be found [here](compatibilityTesting/reports/index.md).

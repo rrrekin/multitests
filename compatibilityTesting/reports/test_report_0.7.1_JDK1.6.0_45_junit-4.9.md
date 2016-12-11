@@ -1,4 +1,4 @@
-# Compatibility test results for multitests library v. 0.7.1 using JUnit v. 4.+ and Java 1.6.0_45 from Sun Microsystems Inc.
+# Compatibility test results for multitests library v. 0.7.1 using JUnit v. 4.9 and Java 1.6.0_45 from Sun Microsystems Inc.
 - RepeatTest.test1 -> **OK**
 - RepeatTest.test2 -> **OK**
 - RepeatTest.test3 -> ~~skipped~~
